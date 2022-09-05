@@ -1,4 +1,5 @@
 
+
 class Variables:   #una clase para controlar las variables
 
     def __init__(self): #inicializa la clase generando una lista de variables vacia
@@ -125,7 +126,7 @@ class Funciones_Predeterminadas:
 class Interpretador:
 
     def __init__(self, code):
-        self.code = code.replace(" ","")
+        self.code = code.replace(" ","").replace("CORP", "CORP;")
         self.godcode = code.split(";")
         self.palabras_reservadas = ["PROG","GORP","var","PROC","CORP","walk","jump","jumpTo", "veer","look","drop","grab","get","free","pop","walk","if","else","fi",
         "while","do","od","repeatTimes","per","isfacing","isValid","canWalk","not", "{","}"]
@@ -140,6 +141,7 @@ class Interpretador:
         self.whilecorret = 0
         self.ifcorrect = 0
         self.repeattimescorrect = 0
+        self.funciones = []
 
     def revisar(self):
         if self.code.startswith("PROG") and self.code.endswith("GORP"):
@@ -165,7 +167,32 @@ class Interpretador:
                                     print("Hay un error en el syntax!")
                                     break
                                 else:
-                                    pass
+                                    funcion = ""
+                                    if element.startswith("PROC") and element.endswith("CORP"):
+                                        funcion = element
+                                    elif element.startswith("PROC") and element.endswith("CORP") == False:
+                                        ix = self.godcode.index(element)
+                                        Corpfound = False
+                                        funcion = ""
+                                        elemento = element
+                                        while Corpfound == False:
+                                            if element.endswith("CORP"):
+                                                Corpfound = True
+                                            else:
+                                                elemento = self.godcode[ix]
+                                                ix += 1
+                                                funcion = funcion + elemento
+                                    if funcion != "":
+                                        self.funciones.append(funcion)
+                                        funcionsplit = funcion.split(")")
+                                        nombreyvar = funcionsplit[0].split("(")
+                                        nombre = nombreyvar[0]
+                                        vars = []
+                                        for cosa in nombreyvar[1]:
+                                            if cosa != " " and cosa != ",":
+                                                vars.append(cosa)
+                                        self.funciones_usuario.nueva_funcion(nombre,vars)
+
                             elif palabra_reservada == "CORP":
                                 self.corptimes +=1
                                 if self.corptimes >1:
@@ -220,9 +247,47 @@ class Interpretador:
                             if times > 1:
                                 print("Hay un error en el syntax!")
                                 break
-                                
-                            #if self.funciones_predeterminadas.tipo_func(palabra_reservada, )
-                        
+                for nombre_func in self.funciones_usuario.funciones.keys():
+                    if nombre_func in element:
+                        for funcione in self.funciones:
+                            if nombre_func in funcione:
+                                vartouse = element.split(str(nombre_func))
+                                listavars = (vartouse[0].split(")")).replace("(","")
+                                bars = []
+                                for variable in listavars:
+                                    if variable != "," and variable != " ":
+                                        bars.append(variable)
+
+                                varsnot = self.funciones_usuario.funciones[nombre_func]
+                                k = 0
+                                while k < len(varsnot):
+                                    funcione.replace(varsnot[k], bars[k])
+                                    k+=1
+
+                                for cosa in funcione:
+                                    for palabra_reservada in self.palabra_reservada_func:
+                                        if palabra_reservada in funcione:
+                                            listap = funcione.split(palabra_reservada)
+                                            listap = (listap[1].split(")")).replace("(", "")
+                                            varparafunc = []
+                                            for a in listap[0]:
+                                                if a != "," and a != " ":
+                                                    varparafunc.append(a)
+                                            if len(varparafunc) == 1:
+                                                if self.funciones_predeterminadas.tipo_func(palabra_reservada, varparafunc[0]) != True:
+                                                    print("Hay un error en el syntax!")
+                                                    break
+                                            elif len(varparafunc) == 2:
+                                                if self.funciones_predeterminadas.tipo_func(palabra_reservada, varparafunc[0], varparafunc[1]) != True:
+                                                    print("Hay un error en el syntax!")
+                                                    break
+                                            else:
+                                                print("Hay un error en el syntax!")
+                                                break
+                                                
+                            else:    
+                                print("Hay un error en el syntax!")
+                                break               
                         
         else:
             print("Hay un error en el syntax!")
