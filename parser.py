@@ -252,9 +252,9 @@ class Interpretador:
                         for funcione in self.funciones:
                             if nombre_func in funcione:
                                 vartouse = element.split(str(nombre_func))
-                                listavars = (vartouse[0].split(")")).replace("(","")
+                                listavars = (vartouse[1].split(")")).replace("(","")
                                 bars = []
-                                for variable in listavars:
+                                for variable in listavars[0]:
                                     if variable != "," and variable != " ":
                                         bars.append(variable)
 
@@ -262,29 +262,27 @@ class Interpretador:
                                 k = 0
                                 while k < len(varsnot):
                                     funcione.replace(varsnot[k], bars[k])
-                                    k+=1
+                                    k+=1 ########## :(
 
-                                for cosa in funcione:
-                                    for palabra_reservada in self.palabra_reservada_func:
-                                        if palabra_reservada in funcione:
-                                            listap = funcione.split(palabra_reservada)
-                                            listap = (listap[1].split(")")).replace("(", "")
-                                            varparafunc = []
-                                            for a in listap[0]:
-                                                if a != "," and a != " ":
-                                                    varparafunc.append(a)
-                                            if len(varparafunc) == 1:
-                                                if self.funciones_predeterminadas.tipo_func(palabra_reservada, varparafunc[0]) != True:
-                                                    print("Hay un error en el syntax!")
-                                                    break
-                                            elif len(varparafunc) == 2:
-                                                if self.funciones_predeterminadas.tipo_func(palabra_reservada, varparafunc[0], varparafunc[1]) != True:
-                                                    print("Hay un error en el syntax!")
-                                                    break
-                                            else:
+                                for palabra_reservada in self.palabra_reservada_func:
+                                    if palabra_reservada in funcione:
+                                        listap = funcione.split(palabra_reservada)
+                                        listap = (listap[1].split(")")).replace("(", "")
+                                        varparafunc = []
+                                        for a in listap[0]:
+                                            if a != "," and a != " ":
+                                                varparafunc.append(a)
+                                        if len(varparafunc) == 1:
+                                            if self.funciones_predeterminadas.tipo_func(palabra_reservada, varparafunc[0]) != True:
                                                 print("Hay un error en el syntax!")
                                                 break
-                                                
+                                        elif len(varparafunc) == 2:
+                                            if self.funciones_predeterminadas.tipo_func(palabra_reservada, varparafunc[0], varparafunc[1]) != True:
+                                                print("Hay un error en el syntax!")
+                                                break
+                                        else:
+                                            print("Hay un error en el syntax!")
+                                            break        
                             else:    
                                 print("Hay un error en el syntax!")
                                 break               
